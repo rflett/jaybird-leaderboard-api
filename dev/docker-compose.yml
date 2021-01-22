@@ -3,19 +3,51 @@ services:
 
   mongo:
     image: mongo:latest
-    restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: secretPassword
+      MONGO_INITDB_ROOT_USERNAME: jjjuser
+      MONGO_INITDB_ROOT_PASSWORD: ryanflett
+    volumes:
+      - database:/data/db
     ports:
       - 27017:27017
       - 27018:27018
 
-  mongo-express:
+  mongoexpress:
     image: mongo-express:latest
-    restart: always
     ports:
       - 8081:8081
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: secretPassword
+      ME_CONFIG_MONGODB_ADMINUSERNAME: jjjuser
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ryanflett
+
+  bottomsup:
+    build:
+      context: ../../bottoms-up/
+    restart: always
+    ports:
+      - 9000:9000
+
+  chunemachine:
+    build:
+      context: ../../chune-machine
+    environment: 
+      API_URL: http://api:5050/twitter-update
+    restart: always
+
+  api:
+    build:
+      context: ../
+    restart: always
+    ports:
+      - 5050:5050
+      - 4001:4001
+
+  ui:
+    build:
+      context: ../../lyrebird-leaderboard-ui
+    restart: always
+    ports: 
+      - 80:80
+  
+volumes:
+  database:
